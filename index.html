@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TokenWarden — Cost attribution &amp; budget caps for AI agents</title>
+<meta name="description" content="Self-serve proxy for teams running LLM agents in production: per-agent, per-customer cost attribution, hard budget circuit breakers, smart routing. Join the waitlist.">
+
+<!--
+  TokenWarden landing page — single file, GitHub Pages ready.
+  ------------------------------------------------------------
+  SETUP CHECKLIST BEFORE DEPLOYING:
+  1. Replace FORMSPREE_ENDPOINT below (search "FORMSPREE") with your real
+     endpoint, e.g. https://formspree.io/f/xnqkabcd
+  2. (Optional) Paste an analytics snippet before </head> — GoatCounter or
+     Cloudflare Web Analytics both have free tiers and work on GitHub Pages.
+     Without analytics you can count form submissions but NOT conversion rate.
+  3. A/B headline variants are marked below — swap the <h1> text to test.
+-->
+<script>
+  // FORMSPREE: register at https://formspree.io (free tier = 50 submissions/mo),
+  // create a form, paste its endpoint here:
+  window.FORMSPREE_ENDPOINT = "https://formspree.io/f/xzeblknr";
+</script>
+
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#12161f; --panel2:#171c28; --line:#232a3a;
+    --text:#e6e9f0; --muted:#9aa4b8; --accent:#5eead4; --accent2:#fbbf24;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+  section{padding:72px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+  h1{font-size:clamp(30px,5.4vw,52px);line-height:1.12;font-weight:800;letter-spacing:-0.02em}
+  h2{font-size:clamp(22px,3.4vw,30px);font-weight:700;letter-spacing:-0.01em;margin-bottom:8px}
+  .sub{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:640px;margin-top:18px}
+  .lede{color:var(--muted);margin-top:10px;max-width:640px}
+  code, .mono{font-family:var(--mono);font-size:.92em;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--accent)}
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(11,14,20,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+  .logo{font-family:var(--mono);font-weight:700;font-size:15px}
+  .logo span{color:var(--accent)}
+  .navcta{font-size:13px;font-family:var(--mono);color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 14px}
+  .navcta:hover{border-color:var(--accent)}
+  /* hero */
+  .hero{padding:96px 0 80px}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px;align-items:center}
+  .btn{display:inline-block;font-weight:600;font-size:15px;text-decoration:none;border-radius:10px;padding:14px 26px;border:1px solid transparent;cursor:pointer;font-family:inherit}
+  .btn-primary{background:var(--accent);color:#06231e}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost{border-color:var(--line);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--muted);color:var(--text)}
+  .hero-note{font-size:13px;color:var(--muted);margin-top:16px}
+  /* problem list */
+  .pain{list-style:none;margin-top:28px;display:grid;gap:16px}
+  .pain li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+  .pain q{display:block;font-size:16px;font-weight:600;quotes:"“" "”"}
+  .pain small{display:block;color:var(--muted);margin-top:6px;font-size:14px}
+  /* how it works */
+  .steps{margin-top:28px;display:grid;gap:16px;counter-reset:step}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;position:relative;padding-left:64px}
+  .step::before{counter-increment:step;content:counter(step);position:absolute;left:20px;top:20px;width:28px;height:28px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);color:var(--accent);font-weight:700}
+  .step h3{font-size:16px;margin-bottom:6px}
+  .step p{color:var(--muted);font-size:14.5px}
+  /* generic grids */
+  .grid{display:grid;gap:16px;margin-top:28px}
+  @media(min-width:640px){.grid.cols3{grid-template-columns:repeat(3,1fr)}.grid.cols2{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .card h3{font-size:15.5px;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:14.5px}
+  /* pricing */
+  .price-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:520px;margin-top:28px}
+  .price{font-size:40px;font-weight:800}
+  .price small{font-size:15px;color:var(--muted);font-weight:500}
+  .price-card ul{list-style:none;margin:16px 0 22px;display:grid;gap:8px}
+  .price-card li{font-size:14.5px;color:var(--muted);padding-left:22px;position:relative}
+  .price-card li::before{content:"✓";position:absolute;left:0;color:var(--accent)}
+  .early{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--accent2);border:1px solid var(--accent2);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+  /* faq */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-top:12px}
+  details summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none}
+  details summary::before{content:"+";font-family:var(--mono);color:var(--accent);margin-right:10px}
+  details[open] summary::before{content:"–"}
+  details p{color:var(--muted);font-size:14.5px;margin-top:10px}
+  /* form */
+  .form-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:560px}
+  .form-card label{display:block;font-size:13px;font-family:var(--mono);color:var(--muted);margin:16px 0 6px}
+  .form-card input,.form-card select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:12px 14px;font-size:15px;font-family:inherit}
+  .form-card input:focus,.form-card select:focus{outline:none;border-color:var(--accent)}
+  .form-hp{position:absolute;left:-9999px;opacity:0;height:0}
+  .form-msg{margin-top:14px;font-size:14px;min-height:20px}
+  .form-msg.ok{color:var(--accent)}
+  .form-msg.err{color:#f87171}
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">Token<span>Warden</span></div>
+    <a class="navcta" href="#waitlist">Join waitlist</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<!-- A/B VARIANTS (swap h1 text):
+     V1 pain:      "Your agents burned $1,400 last week. On what?"
+     V2 outcome:   "Cut LLM waste: retries, loops, and mystery spend."
+     V3 contrarian:"You don't have an AI problem. You have a meter problem."
+-->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Built in public · Waitlist open</div>
+    <h1>Know what your AI agents spend — and cap it.</h1>
+    <p class="sub">TokenWarden is a self-serve proxy for teams running LLM agents in production: per-agent, per-customer cost attribution, hard budget circuit breakers, and routing to cheaper models. One endpoint. Zero rewrites.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
+      <a class="btn btn-ghost" href="#how">See how it works</a>
+    </div>
+    <p class="hero-note">Free to join · Early-bird pricing locked for waitlist members</p>
+  </div>
+</header>
+
+<!-- ============ PROBLEM ============ -->
+<section id="problem">
+  <div class="wrap">
+    <div class="eyebrow">The problem</div>
+    <h2>Your LLM invoice is a black box</h2>
+    <p class="lede">If you run agents in production, at least one of these has happened to you:</p>
+    <ul class="pain">
+      <li><q>Our API usage spiked 400% overnight, and I don't know why.</q><small>Without per-agent attribution there is no line from a dollar spent to the agent, customer, or feature that spent it.</small></li>
+      <li><q>Retries and stuck loops quietly burned a fifth of our budget.</q><small>Agent retries typically account for 15–25% of total LLM cost — usually discovered after the fact, if at all.</small></li>
+      <li><q>We found out about the overspend from the invoice.</q><small>Only about a quarter of teams have real-time visibility into agent spend. The rest get a summary, weeks late.</small></li>
+      <li><q>We swapped models to save money. Did it work? No idea.</q><small>No per-task cost comparison, no before/after numbers — just a guess and a prayer.</small></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SOLUTION ============ -->
+<section id="solution">
+  <div class="wrap">
+    <div class="eyebrow">What TokenWarden does</div>
+    <h2>Meter everything. Enforce what you set.</h2>
+    <p class="lede">TokenWarden sits between your agents and your model providers. You get a live ledger of who spends what — and a breaker that trips before the pain, not after.</p>
+    <div class="grid cols3">
+      <div class="card"><h3>Real-time attribution</h3><p>Spend per agent, per customer, per feature, per API key. Live dashboards, not month-end surprises.</p></div>
+      <div class="card"><h3>Hard budget caps</h3><p>Set a budget per tag. When an agent hits it, the circuit breaker trips and alerts fire — no runaway loops, no surprise invoices.</p></div>
+      <div class="card"><h3>Budget-aware routing</h3><p>Low-stakes tasks automatically route to cheaper models when budget pressure rises. You keep the quality where it pays.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2>One endpoint. Minutes, not sprints.</h2>
+    <div class="steps">
+      <div class="step"><h3>Point your client at TokenWarden</h3><p>An OpenAI-compatible endpoint — change one <span class="mono">base_url</span>. Works with LangChain, LlamaIndex, CrewAI, or raw SDKs.</p></div>
+      <div class="step"><h3>Tag your traffic</h3><p>Label requests by agent, customer, or feature — one header, or one line of config. That's the whole instrumentation step.</p></div>
+      <div class="step"><h3>Set budgets and alerts</h3><p>Caps per tag, alerts to Slack or email. Dashboards update live; breakers trip before budgets do.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY DIFFERENT ============ -->
+<section id="different">
+  <div class="wrap">
+    <div class="eyebrow">Why not the usual tools</div>
+    <h2>Enforcement, not another dashboard</h2>
+    <div class="grid cols3">
+      <div class="card"><h3>LiteLLM caps a key.<br>Helicone shows the burn.</h3><p>Nobody ties per-customer unit economics to hard enforcement and alerts in one self-serve product. That's the gap we fill — and it's all we do.</p></div>
+      <div class="card"><h3>Sized for small teams</h3><p>No enterprise contract, no sales call, no "contact us" pricing. Card in, budgets on. Self-serve from day one.</p></div>
+      <div class="card"><h3>Narrow on purpose</h3><p>We don't do traces, evals, or prompt management. We do spend control, end to end — one thing done properly instead of a platform you'll outgrow.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h2>Planned pricing, early-bird for the first cohort</h2>
+    <div class="price-card">
+      <span class="early">Waitlist early-bird</span>
+      <div class="price">$29<small>/mo, locked for waitlist members</small></div>
+      <ul>
+        <li>Unlimited agents, customers, and tags</li>
+        <li>Real-time attribution dashboards</li>
+        <li>Hard budget caps + Slack/email alerts</li>
+        <li>Budget-aware model routing</li>
+        <li>Planned launch price: $49/mo — waitlist locks $29 for life</li>
+      </ul>
+      <a class="btn btn-primary" href="#waitlist">Lock the early-bird price</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">FAQ</div>
+    <h2>Questions developers ask</h2>
+    <details><summary>Which providers and frameworks are supported?</summary><p>Any OpenAI-compatible API — OpenAI, Azure, Bedrock, and friends. You change the <span class="mono">base_url</span>; your code stays the same. LangChain, LlamaIndex, CrewAI, and raw SDKs all work out of the box.</p></details>
+    <details><summary>What do you do with my request data?</summary><p>TLS end-to-end. We meter token counts and metadata by default; request payloads pass through and are not stored. An opt-in PII-aware mode is on the roadmap — mention it on the waitlist form if you need it early.</p></details>
+    <details><summary>How is this different from LiteLLM, Helicone, or Portkey?</summary><p>LiteLLM is a proxy library with basic key-level caps. Helicone is observability — it shows the burn. Portkey adds routing. TokenWarden combines per-agent/per-customer attribution, hard enforcement, and alerting in one product built for small teams, not a platform you'll outgrow or an OSS project you maintain yourself.</p></details>
+    <details><summary>When does it launch?</summary><p>We're building in public now. Waitlist members get first access and the early-bird price locked. First-cohort access is planned within weeks of the waitlist closing.</p></details>
+    <details><summary>Can I self-host it?</summary><p>Cloud first. Self-hosting is on the roadmap — tell us on the waitlist form if it's a requirement; it shapes what we build first.</p></details>
+  </div>
+</section>
+
+<!-- ============ WAITLIST ============ -->
+<section id="waitlist">
+  <div class="wrap">
+    <div class="eyebrow">Waitlist</div>
+    <h2>Get first access — and the $29 early-bird, locked</h2>
+    <p class="lede">One email when your cohort opens. No spam, no newsletter unless you ask. Unsubscribe anytime.</p>
+    <div class="form-card" style="margin-top:28px">
+      <form id="waitlist-form" action="#" method="POST" novalidate>
+        <label for="email">Work email</label>
+        <input id="email" name="email" type="email" required placeholder="you@company.com" autocomplete="email">
+        <label for="stack">What do your agents run on? (optional)</label>
+        <select id="stack" name="stack">
+          <option value="">Choose one…</option>
+          <option>LangChain</option>
+          <option>LlamaIndex</option>
+          <option>CrewAI / multi-agent</option>
+          <option>Raw SDKs / custom</option>
+          <option>Other</option>
+        </select>
+        <label for="need">Nice-to-have that would make you pay on day one (optional)</label>
+        <input id="need" name="need" type="text" placeholder="e.g. per-customer unit economics, Slack alerts, self-hosting…">
+        <!-- honeypot: bots fill this, humans never see it -->
+        <div class="form-hp" aria-hidden="true"><label>Leave this field empty<input type="text" name="_gotcha" tabindex="-1"></label></div>
+        <input type="hidden" name="source" id="source" value="landing">
+        <div class="cta-row"><button class="btn btn-primary" type="submit">Join the waitlist</button></div>
+        <p class="form-msg" id="form-msg"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 TokenWarden · Building in public</div>
+    <div>Spend control for AI agents — nothing more, nothing less.</div>
+  </div>
+</footer>
+
+<script>
+// tag source for rough attribution (?src=hn / ?src=x etc.)
+(function(){
+  var s = new URLSearchParams(location.search).get("src");
+  if (s) document.getElementById("source").value = s;
+})();
+
+// waitlist form -> Formspree
+document.getElementById("waitlist-form").addEventListener("submit", function(e){
+  e.preventDefault();
+  var msg = document.getElementById("form-msg");
+  var email = document.getElementById("email").value.trim();
+  if (!email || email.indexOf("@") < 0) {
+    msg.className = "form-msg err"; msg.textContent = "Please enter a valid email.";
+    return;
+  }
+  if (window.FORMSPREE_ENDPOINT.indexOf("YOUR_FORM_ID") > -1) {
+    msg.className = "form-msg err";
+    msg.textContent = "Form not wired up yet — set FORMSPREE_ENDPOINT in this file's <head>.";
+    return;
+  }
+  var data = new FormData(e.target);
+  msg.className = "form-msg"; msg.textContent = "Sending…";
+  fetch(window.FORMSPREE_ENDPOINT, { method:"POST", body:data, headers:{ "Accept":"application/json" } })
+    .then(function(r){
+      if (r.ok) {
+        msg.className = "form-msg ok";
+        msg.textContent = "You're on the list. One email when your cohort opens — nothing else.";
+        e.target.reset();
+      } else {
+        msg.className = "form-msg err";
+        msg.textContent = "Something went wrong — try again in a moment.";
+      }
+    })
+    .catch(function(){
+      msg.className = "form-msg err";
+      msg.textContent = "Network error — try again in a moment.";
+    });
+});
+</script>
+
+</body>
+</html>
