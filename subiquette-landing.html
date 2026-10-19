@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subiquette — Comment on Reddit without breaking a single rule</title>
+<meta name="description" content="Subiquette reads each subreddit's actual rules, finds the threads where your answer belongs, and drafts a compliant comment. You post it yourself. $9/mo — waitlist gets 50% off, locked.">
+
+<!--
+  Subiquette landing page — single file, GitHub Pages ready.
+  ------------------------------------------------------------
+  Product name: Subiquette (sub + Reddiquette).
+  Domain: subiquette.com — whois-confirmed AVAILABLE on 2026-10-19.
+          Register it before you announce anything anywhere.
+          (threadwise.com was taken, hence the rename.)
+          TODO: USPTO trademark search before launch — not done yet.
+
+  SETUP CHECKLIST BEFORE DEPLOYING:
+  1. FORMSPREE: this file is pre-wired to the SAME endpoint as TokenWarden
+     (free tier = 1 form). Submissions are separated by the hidden "source"
+     field ("subiquette-landing"). If you'd rather keep the two products'
+     leads apart, create a second Formspree form (paid tier) and swap the
+     endpoint below.  — search "FORMSPREE"
+  2. ANALYTICS: GoatCounter is pre-wired to fanlymeng.goatcounter.com. If this
+     product gets its own domain, create a new site code — otherwise the two
+     products' traffic mixes under one code.
+  3. A/B headline variants are marked below — swap the <h1> text to test.
+  4. Set ?src=hn / ?src=ph / ?src=x on links you share. It lands in the
+     "source" field so you can tell which channel actually converted.
+  5. COMPETITIVE CLAIMS — verified 2026-10-15, RE-CHECK BEFORE LAUNCH.
+     - "€29.99/mo, about $33" is m3ek.com's own published list price. Their
+       Pro plan is NOT built yet, so it is a listed price, not a price anyone
+       is paying. FX: 1 EUR = 1.118 USD (ECB, 2026-10-15).
+     - "macOS-only desktop app, Windows pending" — m3ek.com/download.
+     - "bring your own key" — their free tier requires your own Anthropic or
+       OpenAI key.
+     The page does NOT name the competitor. A ready-to-paste named variant is
+     commented out inside the #different section — say the word and it's one
+     uncomment away.
+
+  ✅ CONFIRMED 2026-10-15 — no longer guesses (search "CONFIRMED"):
+     · Browser-based, nothing to install.
+     · Model calls hosted by us; no bring-your-own-key.
+     If either ever changes, three places need editing — each has a marker:
+       1. #different → the "Nothing to install" card
+       2. #pricing  → the "No API key to obtain" list item
+       3. #faq      → the "Do I need my own API key?" entry
+-->
+
+<script>
+  // FORMSPREE: shared with TokenWarden on purpose (free tier = 1 form).
+  // Leads are separated by the hidden "source" field. Swap for a dedicated
+  // form if you want them in separate inboxes.
+  window.FORMSPREE_ENDPOINT = "https://formspree.io/f/xzeblknr";
+</script>
+<script data-goatcounter="https://fanlymeng.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js">
+</script>
+
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#12161f; --panel2:#171c28; --line:#232a3a;
+    --text:#e6e9f0; --muted:#9aa4b8; --accent:#fbbf24; --accent2:#5eead4;
+    --warn:#f87171;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+  section{padding:72px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+  h1{font-size:clamp(30px,5.4vw,52px);line-height:1.12;font-weight:800;letter-spacing:-0.02em}
+  h2{font-size:clamp(22px,3.4vw,30px);font-weight:700;letter-spacing:-0.01em;margin-bottom:8px}
+  .sub{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:640px;margin-top:18px}
+  .lede{color:var(--muted);margin-top:10px;max-width:640px}
+  code,.mono{font-family:var(--mono);font-size:.92em;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--accent)}
+  a{color:inherit}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(11,14,20,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+  .logo{font-family:var(--mono);font-weight:700;font-size:15px}
+  .logo span{color:var(--accent)}
+  .navcta{font-size:13px;font-family:var(--mono);color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 14px}
+  .navcta:hover{border-color:var(--accent)}
+
+  /* hero */
+  .hero{padding:96px 0 80px}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px;align-items:center}
+  .btn{display:inline-block;font-weight:600;font-size:15px;text-decoration:none;border-radius:10px;padding:14px 26px;border:1px solid transparent;cursor:pointer;font-family:inherit}
+  .btn-primary{background:var(--accent);color:#2a1c02}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost{border-color:var(--line);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--muted);color:var(--text)}
+  .hero-note{font-size:13px;color:var(--muted);margin-top:16px}
+
+  /* problem list */
+  .pain{list-style:none;margin-top:28px;display:grid;gap:16px}
+  .pain li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+  .pain q{display:block;font-size:16px;font-weight:600;quotes:"\201C" "\201D"}
+  .pain small{display:block;color:var(--muted);margin-top:6px;font-size:14px}
+
+  /* steps */
+  .steps{margin-top:28px;display:grid;gap:16px;counter-reset:step}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;position:relative;padding-left:64px}
+  .step::before{counter-increment:step;content:counter(step);position:absolute;left:20px;top:20px;width:28px;height:28px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);color:var(--accent);font-weight:700}
+  .step h3{font-size:16px;margin-bottom:6px}
+  .step p{color:var(--muted);font-size:14.5px}
+
+  /* grids */
+  .grid{display:grid;gap:16px;margin-top:28px}
+  @media(min-width:640px){.grid.cols3{grid-template-columns:repeat(3,1fr)}.grid.cols2{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .card h3{font-size:15.5px;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:14.5px}
+
+  /* rule digest box */
+  .rulebox{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .rulebox .hd{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel2)}
+  .rulebox .row{display:flex;gap:14px;align-items:baseline;padding:13px 20px;border-bottom:1px solid var(--line);font-size:14px}
+  .rulebox .row:last-child{border-bottom:none}
+  .rulebox .sub{font-family:var(--mono);font-size:13px;color:var(--text);flex:0 0 auto;min-width:150px;margin:0}
+  .rulebox .txt{color:var(--muted)}
+  .rulebox .ok::before{content:"OK";font-family:var(--mono);font-size:11px;color:var(--accent2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;margin-right:10px;flex:0 0 auto}
+  .rulebox .no::before{content:"NO";font-family:var(--mono);font-size:11px;color:var(--warn);border:1px solid var(--line);border-radius:5px;padding:1px 7px;margin-right:10px;flex:0 0 auto}
+  .rulebox .care::before{content:"!!";font-family:var(--mono);font-size:11px;color:var(--accent);border:1px solid var(--line);border-radius:5px;padding:1px 7px;margin-right:10px;flex:0 0 auto}
+  .rulebox .row span.t{display:flex;align-items:baseline}
+  @media(max-width:560px){.rulebox .sub{min-width:0;display:block;margin-bottom:4px}.rulebox .row{display:block}}
+
+  /* pricing */
+  .price-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:520px;margin-top:28px}
+  .price{font-size:40px;font-weight:800}
+  .price small{font-size:15px;color:var(--muted);font-weight:500}
+  .price-vs{font-family:var(--mono);font-size:12.5px;color:var(--accent);margin-top:10px}
+  .price-card ul{list-style:none;margin:16px 0 22px;display:grid;gap:8px}
+  .price-card li{font-size:14.5px;color:var(--muted);padding-left:22px;position:relative}
+  .price-card li::before{content:"✓";position:absolute;left:0;color:var(--accent2)}
+  .early{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+
+  /* faq */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-top:12px}
+  details summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"+";font-family:var(--mono);color:var(--accent);margin-right:10px}
+  details[open] summary::before{content:"–"}
+  details p{color:var(--muted);font-size:14.5px;margin-top:10px}
+
+  /* form */
+  .form-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:560px}
+  .form-card label{display:block;font-size:13px;font-family:var(--mono);color:var(--muted);margin:16px 0 6px}
+  .form-card input,.form-card select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:12px 14px;font-size:15px;font-family:inherit}
+  .form-card input::placeholder{color:#5d6779}
+  .form-card input:focus,.form-card select:focus{outline:none;border-color:var(--accent)}
+  .form-hp{position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden}
+  .form-msg{margin-top:14px;font-size:14px;min-height:20px}
+  .form-msg.ok{color:var(--accent2)}
+  .form-msg.err{color:var(--warn)}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .disclaimer{font-size:12px;color:#6b7488;margin-top:20px;line-height:1.7;max-width:700px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">Sub<span>iquette</span></div>
+    <a class="navcta" href="#waitlist">Join waitlist</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<!-- A/B VARIANTS (swap h1 text):
+     V1 pain:       "You got shadowbanned. Nobody told you why."
+     V2 outcome:    "One useful Reddit comment a day. No bans."
+     V3 contrarian: "Reddit isn't the problem. Not reading the rules is."
+-->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Built in public · Waitlist open · first 200 seats</div>
+    <h1>Comment on Reddit without breaking a single rule.</h1>
+    <p class="sub">Subiquette reads each subreddit's actual rules, finds the threads where your answer genuinely belongs, and drafts a comment that fits that community. You edit it and post it yourself — from your own account. No auto-posting, no account access, nothing to install.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
+      <a class="btn btn-ghost" href="#how">See how it works</a>
+    </div>
+    <p class="hero-note">Free to join · $9/mo becomes $4.50/mo for waitlist members, locked for life</p>
+  </div>
+</header>
+
+<!-- ============ PROBLEM ============ -->
+<section id="problem">
+  <div class="wrap">
+    <div class="eyebrow">The problem</div>
+    <h2>Reddit is the best channel you're too scared to use</h2>
+    <p class="lede">Your buyers are already there, describing the exact problem you solve. Almost nobody posts anyway, because the rules are written for insiders and enforced by strangers. If you've tried, at least one of these has happened:</p>
+    <ul class="pain">
+      <li><q>One subreddit allows it. The next one deletes the same comment.</q><small>Every community writes its own rules and they contradict each other — link policies, self-promo windows, AI-text bans, karma and account-age gates. You find out by getting removed.</small></li>
+      <li><q>My comment disappeared and I never got a reason.</q><small>Removals are usually silent. No notification, no explanation, no way to tell whether it was the link, the tone, or the age of your account.</small></li>
+      <li><q>I spent an hour finding the thread. By then it was dead.</q><small>The thread where someone describes your exact problem is buried under noise — and it stops getting views long before you finish reading the sidebar.</small></li>
+      <li><q>I wrote the comment, read it back, and it sounded like an ad.</q><small>Answering the question <em>and</em> mentioning your product without reading like spam is genuinely hard. Most people give up at this step.</small></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SOLUTION ============ -->
+<section id="solution">
+  <div class="wrap">
+    <div class="eyebrow">What Subiquette does</div>
+    <h2>Read the rules. Find the thread. Draft the comment.</h2>
+    <p class="lede">Subiquette does the reading and the drafting. The publishing decision stays with you — that isn't a limitation, it's the reason your account survives.</p>
+    <div class="grid cols3">
+      <div class="card"><h3>Rule digest</h3><p>Each community's rules summarised in plain language, with the risky clauses called out before you write: no-link zones, no-AI-text zones, self-promo windows, karma gates.</p></div>
+      <div class="card"><h3>Thread finder</h3><p>Only live, unlocked threads you haven't already replied to — and every one comes with the reason it matched your product.</p></div>
+      <div class="card"><h3>Compliant draft</h3><p>Written for one specific thread, against that community's own rules. Answer first, product second, disclosure in the same comment.</p></div>
+    </div>
+
+    <div class="rulebox">
+      <div class="hd">What a rule check looks like before you write a word</div>
+      <div class="row"><span class="sub">r/SaaS</span><span class="t ok"><span class="txt">Self-promo allowed in comments when it answers the question</span></span></div>
+      <div class="row"><span class="sub">r/startups</span><span class="t care"><span class="txt">Links restricted to the weekly thread only</span></span></div>
+      <div class="row"><span class="sub">r/smallbusiness</span><span class="t no"><span class="txt">AI-generated comments removed on sight</span></span></div>
+      <div class="row"><span class="sub">r/Entrepreneur</span><span class="t ok"><span class="txt">Disclosure required, then allowed</span></span></div>
+      <div class="row"><span class="sub">Result</span><span class="t"><span class="txt">3 of 4 communities are safe for this thread. We drafted for two and skipped <span class="mono">r/smallbusiness</span> entirely.</span></span></div>
+    </div>
+    <p class="lede" style="font-size:13px;margin-top:12px">Illustrative example. Rules shown are examples of the shapes we check for, not a live snapshot of any community.</p>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2>Three steps. You keep the last one.</h2>
+    <div class="steps">
+      <div class="step"><h3>Describe your product once</h3><p>A link and a few sentences. Subiquette works out who your buyers are and how they describe the problem out loud.</p></div>
+      <div class="step"><h3>We scan for threads that fit</h3><p>Every candidate is checked against that community's current rules — post age, locked status, link policy, self-promo window, disclosure requirements — before it reaches you.</p></div>
+      <div class="step"><h3>You get a draft, then you post</h3><p>Each draft is written for one thread. You edit it into your own voice, paste it in yourself, and log the comment URL so you can see what actually brought traffic.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY DIFFERENT ============ -->
+<section id="different">
+  <div class="wrap">
+    <div class="eyebrow">Why not the usual tools</div>
+    <h2>Runs in your browser. Posts nothing for you.</h2>
+    <div class="grid cols3">
+      <!-- CONFIRMED 2026-10-15: browser-based, nothing to install. If that changes, delete this whole card. -->
+      <div class="card"><h3>Nothing to install</h3><p>The closest thing to this is a desktop app you have to install — macOS only right now, Windows still to come. Subiquette runs in your browser. Mac, Windows, or your phone, and it's the same tool on all three.</p></div>
+      <div class="card"><h3>We don't post for you</h3><p>Tools that sell auto-commenting are selling the exact thing that gets accounts banned. Subiquette never logs into your account and never submits anything. The draft is the deliverable.</p></div>
+      <div class="card"><h3>Priced for solo founders</h3><p>$9/mo. The closest thing to this lists at €29.99/mo — about $33 — and it's the desktop app above. No sales call, no annual contract, no "contact us" pricing, and no API key to go and find first.</p></div>
+    </div>
+    <!--
+      NAMED VARIANT — your TokenWarden page names competitors openly, so swap in
+      this version of card 1 if you'd rather be explicit. Verify before launch:
+      <div class="card"><h3>Nothing to install</h3><p>m3ek is a desktop workbench: macOS only today, Windows still being built, and not notarised — so every Mac user hits an "Apple could not verify" warning on first open. Subiquette runs in your browser.</p></div>
+    -->
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h2>One plan. $9 a month.</h2>
+    <div class="price-card">
+      <span class="early">Waitlist early-bird · 50% off</span>
+      <div class="price">$4.50<small>/mo, locked for waitlist members</small></div>
+      <div class="price-vs">vs €29.99/mo (≈ $33) for the closest alternative</div>
+      <ul style="margin-top:20px">
+        <li>Unlimited thread scans across your target communities</li>
+        <li>Rule digests, re-checked as communities change them</li>
+        <li>Compliant comment drafts, one thread at a time</li>
+        <li>Risk flags for link, AI-text and self-promo bans</li>
+        <li>Source link on every rule and every thread</li>
+        <li>Outcome log — which threads actually sent traffic</li>
+        <!-- CONFIRMED 2026-10-15: no BYOK. If that changes, drop this line AND the "Do I need my own API key?" FAQ entry. -->
+        <li>No API key to obtain — model calls run on our side</li>
+        <li>Cancel any time, no contract</li>
+        <li>Planned launch price: $9/mo — waitlist locks $4.50 for life</li>
+      </ul>
+      <a class="btn btn-primary" href="#waitlist">Lock the early-bird price</a>
+      <p class="hero-note">First 200 emails only. No card required to join the list.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">FAQ</div>
+    <h2>Questions founders ask</h2>
+
+    <details open><summary>Will this get my Reddit account banned?</summary><p>No tool can promise that, and anyone who does is lying to you. What Subiquette does is remove the most common cause of bans: posting something a community explicitly forbids. It never logs into your account, never submits anything on your behalf, and never bulk-posts the same comment across communities. Every comment is written for one thread and published by you, after you've read the rules we surfaced.</p></details>
+
+    <details><summary>Does it post comments for me?</summary><p>Never. Subiquette produces a draft. You copy it, edit it into your own voice, and paste it into Reddit yourself. That manual step is deliberate — it's the pause where you notice a new moderator note, a better answer already in the thread, or a reason to say nothing at all.</p></details>
+
+    <details><summary>Do I have to connect my Reddit account?</summary><p>No. There is nothing to connect. Subiquette reads only publicly available information — community rules, public threads — and hands you text. Your Reddit credentials never touch our system.</p></details>
+
+    <details><summary>Do I need my own API key?</summary><p>No. Model calls run on our side, so there's no Anthropic or OpenAI key to obtain and nothing to configure before your first draft. You sign up, describe what you sell, and it works.</p></details>
+
+    <details><summary>Where do the rules come from?</summary><p>Each community's published rules page, its wiki, and pinned moderator announcements. Every rule we apply is shown with a link back to where it was published, so you can verify it before you write anything. Rules change, so we re-check them rather than serving a stale copy.</p></details>
+
+    <details><summary>What if a community's rules don't say anything about it?</summary><p>We mark it unknown and tell you so. Silence is never read as permission — if a rule doesn't explicitly allow something, Subiquette won't tell you it's fine. An honest gap beats a confident guess, and the gap is the part that gets comments removed.</p></details>
+
+    <details><summary>How is this different from the other Reddit marketing tools?</summary><p>There are tools that automate posting for you — that's the thing that gets accounts banned, and we don't do it. There are also tools that help you research threads and write replies. Subiquette is deliberately narrower than all of them: rules in, compliant draft out, you publish. If a product promises to run your whole Reddit marketing end to end, it's a different tool with a different risk profile.</p></details>
+
+    <details><summary>Is this allowed by Reddit?</summary><p>Subiquette is an independent tool and is not affiliated with, endorsed by, or sponsored by Reddit, Inc. It doesn't automate posting or read logged-in content, and it's built around the assumption that a human publishes. You remain responsible for what you post and for following Reddit's terms and each community's rules — which is exactly why we show them to you.</p></details>
+
+    <details><summary>How many communities does it cover?</summary><p>Coverage numbers are being finalised and will be published here at launch. Tell us on the waitlist form where your buyers actually hang out and we'll prioritise those communities first.</p></details>
+
+    <details><summary>When does it launch?</summary><p>We're building in public now. Waitlist members get first access and the early-bird price locked. First-cohort access is planned within weeks of the waitlist closing.</p></details>
+  </div>
+</section>
+
+<!-- ============ WAITLIST ============ -->
+<section id="waitlist">
+  <div class="wrap">
+    <div class="eyebrow">Waitlist</div>
+    <h2>Get first access — and 50% off, locked</h2>
+    <p class="lede">One email when your cohort opens. No spam, no newsletter unless you ask. Unsubscribe anytime.</p>
+    <div class="form-card" style="margin-top:28px">
+      <form id="waitlist-form" action="#" method="POST" novalidate>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required placeholder="you@yourproduct.com" autocomplete="email">
+
+        <label for="where">Where do you want to show up? (optional)</label>
+        <select id="where" name="where">
+          <option value="">Choose one…</option>
+          <option>Reddit only</option>
+          <option>Reddit + Hacker News</option>
+          <option>Reddit + Indie Hackers</option>
+          <option>Reddit + X</option>
+          <option>All of them</option>
+        </select>
+
+        <label for="need">Nice-to-have that would make you pay on day one (optional)</label>
+        <input id="need" name="need" type="text" placeholder="e.g. rule-change alerts, my own subreddits, team seats…">
+
+        <!-- honeypot: bots fill this, humans never see it -->
+        <div class="form-hp" aria-hidden="true"><label>Leave this field empty<input type="text" name="_gotcha" tabindex="-1"></label></div>
+        <input type="hidden" name="source" id="source" value="subiquette-landing">
+        <div class="cta-row"><button class="btn btn-primary" type="submit">Join the waitlist</button></div>
+        <p class="form-msg" id="form-msg"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Subiquette · Building in public</div>
+    <div>Compliant Reddit participation — nothing more, nothing less.</div>
+  </div>
+  <div class="wrap">
+    <p class="disclaimer">Subiquette is an independent product and is not affiliated with, endorsed by, or sponsored by Reddit, Inc. "Reddit" and the Reddit logo are trademarks of Reddit, Inc. Subiquette does not log in to your account, does not publish content on your behalf, and does not guarantee any outcome. You are responsible for the content you post and for complying with Reddit's terms and each community's rules.</p>
+  </div>
+</footer>
+
+<script>
+// tag source for rough attribution (?src=hn / ?src=ph / ?src=x etc.)
+(function(){
+  var s = new URLSearchParams(location.search).get("src");
+  if (s) document.getElementById("source").value = "subiquette-landing:" + s;
+})();
+
+// waitlist form -> Formspree
+document.getElementById("waitlist-form").addEventListener("submit", function(e){
+  e.preventDefault();
+  var msg = document.getElementById("form-msg");
+  var email = document.getElementById("email").value.trim();
+  if (!email || email.indexOf("@") < 0) {
+    msg.className = "form-msg err"; msg.textContent = "Please enter a valid email.";
+    return;
+  }
+  if (window.FORMSPREE_ENDPOINT.indexOf("YOUR_FORM_ID") > -1) {
+    msg.className = "form-msg err";
+    msg.textContent = "Form not wired up yet — set FORMSPREE_ENDPOINT in this file's <head>.";
+    return;
+  }
+  var data = new FormData(e.target);
+  msg.className = "form-msg"; msg.textContent = "Sending…";
+  fetch(window.FORMSPREE_ENDPOINT, { method:"POST", body:data, headers:{ "Accept":"application/json" } })
+    .then(function(r){
+      if (r.ok) {
+        msg.className = "form-msg ok";
+        msg.textContent = "You're on the list. Your 50% code arrives when your cohort opens — nothing else.";
+        e.target.reset();
+      } else {
+        msg.className = "form-msg err";
+        msg.textContent = "Something went wrong — try again in a moment.";
+      }
+    })
+    .catch(function(){
+      msg.className = "form-msg err";
+      msg.textContent = "Network error — try again in a moment.";
+    });
+});
+</script>
+
+</body>
+</html>
